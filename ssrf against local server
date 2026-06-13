@@ -1,0 +1,25 @@
+# Lab: Basic SSRF Against Local Server
+
+## Vulnerability
+Server-Side Request Forgery (SSRF) - Server makes HTTP requests to URLs controlled by attacker
+
+## Target
+- Stock check feature that fetches data from internal URLs
+- Admin panel only accessible from loopback (127.0.0.1/localhost)
+
+## Attack Steps
+1. Found vulnerable `stockApi` parameter in stock form
+2. Changed value from legitimate URL to: `http://localhost/admin?username=carlos`
+3. Server made request to localhost (treated as trusted)
+4. Server accessed admin panel and deleted user carlos
+
+## Why It Worked
+- Server blindly makes requests to any URL in stockApi parameter
+- No validation of target URLs
+- Localhost requests treated as trusted (internal)
+- Attacker can access restricted internal services
+
+## Impact
+- Access to admin interface
+- Delete users
+- Potentially access sensitive data
