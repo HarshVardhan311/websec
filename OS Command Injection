@@ -1,0 +1,21 @@
+Identify and exploit an OS command injection vulnerability in the stock check feature.
+
+Navigated to a product page
+Clicked "Check Stock" and intercepted the request in Burp Suite
+Observed the POST request to /product/stock with parameters:
+
+  productId=1&storeId=1
+
+The storeId parameter appeared to be passed directly to a shell command
+No input sanitization was observed
+
+Injected a command separator into storeId:
+
+  productId=1&storeId=1|whoami
+
+The response returned the output of whoami, confirming command injection
+
+An attacker can execute arbitrary OS commands on the server
+Potential for full server compromise, data exfiltration, reverse shells, etc.
+
+
