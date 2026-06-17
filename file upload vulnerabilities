@@ -1,0 +1,22 @@
+# Lab: Web shell upload via Content-Type restriction bypass
+**Category:** File Upload Vulnerabilities | **Difficulty:** Apprentice
+
+## 📝 Challenge Description
+The application features a user profile avatar upload function. It attempts to prevent non-image files from being uploaded, but its security logic is flawed because it relies entirely on checking client-controlled parameters. The objective was to upload a PHP web shell, execute it on the server, and retrieve the contents of `/home/carlos/secret`.
+
+---
+
+## 🛠️ Technical Concepts Explored
+* **multipart/form-data:** An HTTP request format used when a web form contains binary files alongside regular text fields. It separates different input parameters using unique browser-generated boundary strings.
+* **Content-Type Mismatch Spoofing:** A vulnerability where the server blindly trusts the client-provided MIME type header (e.g., `Content-Type: image/jpeg`) to validate a file's format, without verifying the actual file extension or magic bytes on the backend.
+
+---
+
+## 🔍 Methodology & Chain of Thoughts
+
+### 1. Reconnaissance & Interception
+* Logged into the account using the provided credentials (`wiener:peter`).
+* Used **Burp Suite's built-in browser** to carefully isolate the target application traffic from background browser noise and tracking scripts.
+* Selected a minimal PHP script (`exploit.php`) designed to fetch the target file content:
+  ```php
+  <?php echo file_get_contents('/home/carlos/secret'); ?>
