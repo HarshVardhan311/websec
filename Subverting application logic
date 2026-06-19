@@ -1,0 +1,4 @@
+Subverting application logic
+This technique allows an attacker to bypass authentication checks (like a password validation) by injecting SQL comments to manipulate the query structure.
+
+Many a times entering username'-- might break the query completely bypasses the lgoin check if the user input is directly concatenated into the query
