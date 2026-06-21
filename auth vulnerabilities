@@ -1,0 +1,38 @@
+This lab is vulnerable to username enumeration and password brute-forcing. The application returns subtly different responses depending on whether the username exists in the system. Furthermore, the application implements dynamic response length variations (or echoes the input length), making standard sorting by the "Length" column unreliable.
+
+## Objective
+Enumerate the valid username, brute-force its password, and access the account page.
+
+---
+
+## Step 1: Username Enumeration
+
+1. Capture a failed login attempt in Burp Proxy and send it to Intruder.
+2. Set the payload position on the username parameter.
+3. Load the provided Candidate Usernames list.
+4. The Challenge: Running a standard attack shows fluctuating response lengths. 
+5. The Fix (Grep - Match): Navigate to the Settings tab in Intruder.
+    Scroll to Grep - Match and clear the default entries.
+    Add the exact, full string of the error message displayed on a failed login: `Invalid username or password.` (Ensure it is matched as a literal expression/whole phrase).
+6. Run the attack. 
+7. Sort the results by the new Grep - Match column. 
+   1 indicates the error string was found (Invalid user).
+   0 indicates the error string disappeared or changed slightly.
+   Result: The username with the `0`(or nothing at all) match count is the valid username.
+
+---
+
+## Step 2: Password Brute-Forcing
+
+1. Back in the Intruder Positions tab, hardcode the valid username discovered in Step 1.
+2. Set the payload position on the password parameter.
+3. Load the Candidate Passwords list.
+4. Keep the same Grep - Match rule (`Invalid username or password`)(Note that this error msg is with correct username and is different from above one which is for wrong usernames)  active.
+5. Run the attack.
+
+### Analysis & Solution
+Since the Grep - Match column flags the presence of the login error message:
+Incorrect Passwords: Will return a `1` (or count match) because the login fails and the error is rendered.
+Correct Password: Logs into the account, meaning the error page is skipped entirely. This causes the Grep - Match value to drop to 0(or nothing at all).
+
+Sorting the Grep - Match column from low to high immediately surfaces the winning password at the top with a count of `0`(or nothing at all). Log in using these credentials to solve the lab.
